@@ -1,0 +1,47 @@
+PODS:
+  - AMapFoundation-NO-IDFA (1.6.3)
+  - AMapLocation-NO-IDFA (2.6.5):
+    - AMapFoundation-NO-IDFA (~> 1.6.3)
+  - AMapNavi-NO-IDFA (7.4.0):
+    - AMapFoundation-NO-IDFA (~> 1.6.3)
+  - amapnaviplugin (0.0.1):
+    - AMapLocation-NO-IDFA (= 2.6.5)
+    - AMapNavi-NO-IDFA (= 7.4.0)
+    - AMapSearch-NO-IDFA (= 7.3.0)
+    - Flutter
+    - HandyJSON (= 5.0.1)
+  - AMapSearch-NO-IDFA (7.3.0):
+    - AMapFoundation-NO-IDFA (~> 1.6.3)
+  - Flutter (1.0.0)
+  - HandyJSON (5.0.1)
+
+DEPENDENCIES:
+  - amapnaviplugin (from `.symlinks/plugins/amapnaviplugin/ios`)
+  - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - AMapFoundation-NO-IDFA
+    - AMapLocation-NO-IDFA
+    - AMapNavi-NO-IDFA
+    - AMapSearch-NO-IDFA
+    - HandyJSON
+
+EXTERNAL SOURCES:
+  amapnaviplugin:
+    :path: ".symlinks/plugins/amapnaviplugin/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  AMapFoundation-NO-IDFA: cf241b2f4832fe6c9e121af381e34791be49ad0d
+  AMapLocation-NO-IDFA: 681a55b09638a0a5838c7c260f8825a1dbc7d98d
+  AMapNavi-NO-IDFA: 2781d892886dc334b571cab6d3cac64f0f074893
+  amapnaviplugin: 9ab5484581ebbe2889174f69d20313f798604621
+  AMapSearch-NO-IDFA: 85555dc9ba312949d39a259baa4ef4e0619fa944
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  HandyJSON: d45b8415c501e3affc59ca9762c1197ff0feb646
+
+PODFILE CHECKSUM: d9a378bee98b99e483904cffdac0312cbe66fc7f
+
+COCOAPODS: 1.9.1

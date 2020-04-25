@@ -1,0 +1,42 @@
+group 'com.mp.amapnaviplugin'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.amap.api:navi-3dmap:7.2.0_3dmap7.2.0'
+    implementation 'com.amap.api:location:4.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    compileOnly files('libs/flutter.jar')
+}
