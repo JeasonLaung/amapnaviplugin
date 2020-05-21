@@ -3,7 +3,11 @@ package com.mp.amapnaviplugin;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.mp.amapnaviplugin.model.LatLng;
+
 public class AMapNaviModel implements Parcelable {
+
+    private LatLng startLatLng;
 
     //终点坐标
     private LatLng endLatLng;
@@ -54,6 +58,7 @@ public class AMapNaviModel implements Parcelable {
 
     public AMapNaviModel() {
     }
+
 
     protected AMapNaviModel(Parcel in) {
         naviMode = in.readInt();
@@ -109,12 +114,12 @@ public class AMapNaviModel implements Parcelable {
         }
     };
 
-    public boolean isSetTrafficInfoUpdateEnabled() {
-        return setTrafficInfoUpdateEnabled;
+    public LatLng getStartLatLng() {
+        return startLatLng;
     }
 
-    public void setSetTrafficInfoUpdateEnabled(boolean setTrafficInfoUpdateEnabled) {
-        this.setTrafficInfoUpdateEnabled = setTrafficInfoUpdateEnabled;
+    public void setStartLatLng(LatLng startLatLng) {
+        this.startLatLng = startLatLng;
     }
 
     public LatLng getEndLatLng() {
@@ -189,12 +194,12 @@ public class AMapNaviModel implements Parcelable {
         this.setModeCrossDisplayShow = setModeCrossDisplayShow;
     }
 
-    public boolean isShowTrafficButton() {
-        return showTrafficButton;
+    public boolean isSetTrafficInfoUpdateEnabled() {
+        return setTrafficInfoUpdateEnabled;
     }
 
-    public void setShowTrafficButton(boolean showTrafficButton) {
-        this.showTrafficButton = showTrafficButton;
+    public void setSetTrafficInfoUpdateEnabled(boolean setTrafficInfoUpdateEnabled) {
+        this.setTrafficInfoUpdateEnabled = setTrafficInfoUpdateEnabled;
     }
 
     public boolean isSetTrafficLine() {
@@ -203,6 +208,14 @@ public class AMapNaviModel implements Parcelable {
 
     public void setSetTrafficLine(boolean setTrafficLine) {
         this.setTrafficLine = setTrafficLine;
+    }
+
+    public boolean isShowTrafficButton() {
+        return showTrafficButton;
+    }
+
+    public void setShowTrafficButton(boolean showTrafficButton) {
+        this.showTrafficButton = showTrafficButton;
     }
 
     public boolean isShowTrafficBar() {

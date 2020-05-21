@@ -35,7 +35,7 @@ android {
 
 dependencies {
     implementation 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.amap.api:navi-3dmap:7.2.0_3dmap7.2.0'
+    implementation 'com.amap.api:navi-3dmap:7.4.0_3dmap7.4.0'
     implementation 'com.amap.api:location:4.9.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     compileOnly files('libs/flutter.jar')

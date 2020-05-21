@@ -1,4 +1,4 @@
-package com.mp.amapnaviplugin;
+package com.mp.amapnaviplugin.model;
 
 import java.io.Serializable;
 

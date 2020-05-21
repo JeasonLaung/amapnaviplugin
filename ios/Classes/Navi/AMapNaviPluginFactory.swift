@@ -84,29 +84,34 @@ class FlutterAmapNavView: NSObject, FlutterPlatformView {
         //            result("args is not vaild json string")
         //            return true
         //        }
+        let startPoint = AMapNaviPoint.location(withLatitude: naviOptions.startLatLng.latitude, longitude: naviOptions.startLatLng.longitude)!
         
         let endPoint = AMapNaviPoint.location(withLatitude: naviOptions.endLatLng.latitude, longitude: naviOptions.endLatLng.longitude)!
         
         //进行路径规划
-        AMapNaviDriveManager.sharedInstance().calculateDriveRoute(withEnd: [endPoint], wayPoints: nil, drivingStrategy: .singleDefault)
+        //        AMapNaviDriveManager.sharedInstance().calculateDriveRoute(withEnd: [endPoint], wayPoints: nil, drivingStrategy: .singleDefault)
         
-        
+        AMapNaviDriveManager.sharedInstance().calculateDriveRoute(
+            withStart: [startPoint],
+            end: [endPoint],
+            wayPoints: nil,
+            drivingStrategy: .singleDefault)
     }
     
     func initializeOptions() {
         if naviOptions != nil {
             
             //这里和android的类型调转了，区分一下
-            if naviOptions.naviMode == 0 {
-                //车头向北
-                naviView.trackingMode = AMapNaviViewTrackingMode( rawValue: 0)!
-            }else{
-                naviView.trackingMode = AMapNaviViewTrackingMode( rawValue: 1)!
-            }
-            //
-            //            naviView.trackingMode = AMapNaviViewTrackingMode(rawValue: (navOptions.naviMode)!)!
+                        if naviOptions.naviMode == 0 {
+                            //车头向北
+                            naviView.trackingMode = AMapNaviViewTrackingMode( rawValue: 1)!
+                        }else{
+                            naviView.trackingMode = AMapNaviViewTrackingMode( rawValue: 0)!
+                        }
             
-            naviView.showUIElements = naviOptions.setLayoutVisible
+//            naviView.trackingMode = AMapNaviViewTrackingMode(rawValue: (naviOptions.naviMode)!)!
+            naviView.screenAnchor = CGPoint(x:0.5,y: 0.3);
+            naviView.showUIElements = false
             naviView.showGreyAfterPass = naviOptions.setAfterRouteAutoGray
             naviView.autoSwitchShowModeToCarPositionLocked = naviOptions.setAutoLockCar//自动锁车
             naviView.showCamera = naviOptions.setCameraBubbleShow
@@ -117,6 +122,7 @@ class FlutterAmapNavView: NSObject, FlutterPlatformView {
             naviView.showTrafficBar = naviOptions.showTrafficBar
             naviView.showBrowseRouteButton = naviOptions.showBrowseRouteButton
             naviView.showMoreButton = naviOptions.showMoreButton
+            
         }
     }
     

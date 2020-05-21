@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:amapnaviplugin/amap_navi_controller.dart';
 import 'package:amapnaviplugin/amap_navi_options.dart';
+import 'package:amapnaviplugin/model/navi_info.dart';
 import 'package:amapnaviplugin/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -21,6 +22,7 @@ class AMapNaviView extends StatelessWidget {
   //回调返回事件
   final NaviCloseHandler naviCloseHandler;
   final NaviMoreHandler naviMoreHandler;
+  final NaviInfoHandler naviInfoHandler;
   final NaviTouchMap naviTouchMap;
   final CalculateRouteSuccess calculateRouteSuccess;
   final CalculateRouteFailure calculateRouteFailure;
@@ -30,6 +32,7 @@ class AMapNaviView extends StatelessWidget {
       this.naviViewCreate,
       this.options,
       this.naviCloseHandler,
+        this.naviInfoHandler,
       this.naviMoreHandler, this.calculateRouteSuccess, this.calculateRouteFailure, this.naviTouchMap})
       : super(key: key);
 
@@ -76,6 +79,7 @@ class AMapNaviView extends StatelessWidget {
       onCloseHandler: naviCloseHandler,
       onMoreHandler: naviMoreHandler,
       naviTouchMap: naviTouchMap,
+      naviInfoHandler: naviInfoHandler,
       calculateRouteSuccess: calculateRouteSuccess,
       calculateRouteFailure: calculateRouteFailure,
     );

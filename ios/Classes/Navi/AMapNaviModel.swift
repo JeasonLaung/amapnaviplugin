@@ -15,6 +15,9 @@ class AMapNaviModel: NSObject, HandyJSON {
 
 class NaviOptions: AMapNaviModel {
     
+    //起点坐标
+    var startLatLng:LatLng!
+    
     //终点坐标
     var  endLatLng:LatLng!
 

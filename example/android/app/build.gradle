@@ -27,13 +27,13 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     signingConfigs {
         release {
-            storeFile file('/Users/mac/Documents/work_space/studio_projects/amap_navi_plugin/amap_navi_plugin/example/android/key.jks')
+            storeFile file('/Users/mac/Documents/work_space/studio_projects/amap_navi_plugin/example/android/key.jks')
             storePassword '123456'
             keyAlias = 'mp'
             keyPassword '123456'
         }
         debug {
-            storeFile file('/Users/mac/Documents/work_space/studio_projects/amap_navi_plugin/amap_navi_plugin/example/android/key.jks')
+            storeFile file('/Users/mac/Documents/work_space/studio_projects/amap_navi_plugin/example/android/key.jks')
             storePassword '123456'
             keyAlias = 'mp'
             keyPassword '123456'

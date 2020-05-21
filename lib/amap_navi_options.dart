@@ -11,6 +11,10 @@ class AMapNaviMode {
 }
 
 class AMapNaviOptions {
+
+  //开始点
+  final LatLng startLatLng;
+
   //结束点
   final LatLng endLatLng;
 
@@ -47,20 +51,22 @@ class AMapNaviOptions {
 //    是否显示实时交通按钮，默认true
   final bool showTrafficButton;
 
-//    是否显示路况光柱，默认true
+//    是否显示路况光柱，默认false
   final bool showTrafficBar;
 
-//    是否显示全览按钮，默认true
+//    是否显示全览按钮，默认false
   final bool showBrowseRouteButton;
 
-//    是否显示更多按钮，默认true
+//    是否显示更多按钮，默认false
   final bool showMoreButton;
 
 //    是否使用导航组件，默认false
   final bool isUseComponent;
 
   AMapNaviOptions(
-      {@required this.endLatLng,
+      {
+        @required this.startLatLng,
+        @required this.endLatLng,
       this.naviMode = AMapNaviMode.carNorth,
       this.setLayoutVisible = false,
       this.setScreenAlwaysBright = true,
@@ -72,13 +78,16 @@ class AMapNaviOptions {
       this.setTrafficInfoUpdateEnabled = true,
       this.setTrafficLine = true,
       this.showTrafficButton = true,
-      this.showTrafficBar = true,
-      this.showBrowseRouteButton = true,
-      this.showMoreButton = true,
+      this.showTrafficBar = false,
+      this.showBrowseRouteButton = false,
+      this.showMoreButton = false,
       this.isUseComponent = false});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.startLatLng != null) {
+      data['startLatLng'] = this.startLatLng.toJson();
+    }
     if (this.endLatLng != null) {
       data['endLatLng'] = this.endLatLng.toJson();
     }

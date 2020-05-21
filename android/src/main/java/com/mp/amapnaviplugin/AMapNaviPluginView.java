@@ -2,18 +2,19 @@ package com.mp.amapnaviplugin;
 
 import android.app.Activity;
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviListener;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewListener;
 import com.amap.api.navi.AMapNaviViewOptions;
+import com.amap.api.navi.enums.AMapNaviViewShowMode;
 import com.amap.api.navi.enums.NaviType;
 import com.amap.api.navi.model.AMapCalcRouteResult;
 import com.amap.api.navi.model.AMapLaneInfo;
@@ -30,7 +31,12 @@ import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.autonavi.tbt.TrafficFacilityInfo;
+import com.google.gson.Gson;
+import com.mp.amapnaviplugin.model.LatLng;
+import com.mp.amapnaviplugin.model.MNaviInfo;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +61,7 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
     private AMapNaviView mAMapNaviView;//导航视图类
     private AMapNavi mAMapNavi;//导航控制类
 
+    private LatLng mStartLatLon;//开始点
     private LatLng mEndLatLon;//结束点
 
     private boolean disposed = false;
@@ -71,6 +78,7 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
         mActivity = activity;
         mAMapNaviModel = aMapNaviModel;
 
+        mStartLatLon = aMapNaviModel.getStartLatLng();
         mEndLatLon = aMapNaviModel.getEndLatLng();
 
         mNaviChannel = new MethodChannel(binaryMessenger, Constant.NAVI_CHANNEL_NAME + "/" + id);
@@ -86,6 +94,8 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
 
         mAMapNaviView.setAMapNaviViewListener(this);
 
+        mAMapNaviView.getMap();
+
         mAMapNavi = AMapNavi.getInstance(mActivity.getApplicationContext());
 
         mAMapNavi.addAMapNaviListener(this);
@@ -100,6 +110,7 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
         options.setAfterRouteAutoGray(true);
 
         if (this.mAMapNaviModel != null) {
+            options.setPointToCenter(0.5,0.7);
             options.setLayoutVisible(mAMapNaviModel.isSetLayoutVisible());//隐藏高德自带的UI元素
             options.setScreenAlwaysBright(mAMapNaviModel.isSetScreenAlwaysBright());//开启常亮
             options.setAfterRouteAutoGray(mAMapNaviModel.isSetAfterRouteAutoGray());//走过的路程置灰
@@ -189,29 +200,28 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
         if (methodCall.method.equals("startNavi")) {
 //            if (methodCall.arguments instanceof String) {
 
-                try {
-                    Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "startNavi" );
+            try {
+                Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "startNavi");
 
-                    //路线规划成功 开始导航
-                    mAMapNavi.startNavi(NaviType.EMULATOR);
+                //路线规划成功 开始导航
+                mAMapNavi.startNavi(NaviType.EMULATOR);
 
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                    result.error(throwable.getMessage(), null, null);
-                    return;
-                }
-                result.success("success");
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+                result.error(throwable.getMessage(), null, null);
+                return;
+            }
+            result.success("success");
 //            }
         }
 
         //恢复锁车状态:用于用户主动恢复之前的导航锁车状态（比如从全览画面，挪动地图后画面返回）
-        if (methodCall.method.equals("recoverLockMode")){
+        if (methodCall.method.equals("recoverLockMode")) {
             try {
-                Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "recoverLockMode" );
+                Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "recoverLockMode");
 
                 //锁车
-                mAMapNaviView.recoverLockMode();
-
+                mAMapNaviView.setShowMode(AMapNaviViewShowMode.SHOW_MODE_LOCK_CAR);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
                 result.error(throwable.getMessage(), null, null);
@@ -221,13 +231,12 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
         }
 
         //全览模式  展示全览：成功算路获得路径之后，可将地图缩放到完全展示该路径
-        if (methodCall.method.equals("displayOverview")){
+        if (methodCall.method.equals("displayOverview")) {
             try {
-                Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "displayOverview" );
+                Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "displayOverview");
 
                 //全览地图
-                mAMapNaviView.displayOverview();
-
+                mAMapNaviView.setShowMode(AMapNaviViewShowMode.SHOW_MODE_DISPLAY_OVERVIEW);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
                 result.error(throwable.getMessage(), null, null);
@@ -342,15 +351,20 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
         int strategy = 0;
         try {
             strategy = mAMapNavi.strategyConvert(true, false, false, false, false);
+
+            final List<NaviLatLng> sList = new ArrayList<>();
+            NaviLatLng startNaviLatLng = new NaviLatLng(mStartLatLon.getLatitude(), mStartLatLon.getLongitude());
+            sList.add(startNaviLatLng);
+
             final List<NaviLatLng> eList = new ArrayList<>();
             NaviLatLng endNaviLatLng = new NaviLatLng(mEndLatLon.getLatitude(), mEndLatLon.getLongitude());
             eList.add(endNaviLatLng);
-            mAMapNavi.calculateDriveRoute(eList, null, strategy);//起点为null，途经点为null
+            mAMapNavi.calculateDriveRoute(sList,eList, null, strategy);//起点为null，途经点为null
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-       // mAMapNavi.calculateWalkRoute(new NaviLatLng(39.92, 116.43), new NaviLatLng(39.92, 116.53));
+        // mAMapNavi.calculateWalkRoute(new NaviLatLng(39.92, 116.43), new NaviLatLng(39.92, 116.53));
 
         Log.d(TAG, "onInitNaviSuccess: end");
     }
@@ -417,13 +431,51 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
 
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
-
+//        if (naviInfo == null) {
+//            return;
+//        }
+//
+//        MNaviInfo mNaviInfo = new MNaviInfo();
+//        mNaviInfo.setCurStepRetainDistance(naviInfo.getCurStepRetainDistance());
+//        mNaviInfo.setNextRoadName(naviInfo.getNextRoadName());
+//        mNaviInfo.setPathRetainDistance(naviInfo.getPathRetainDistance());
+//        mNaviInfo.setPathRetainTime(naviInfo.getPathRetainTime());
+//
+//        //bitmap图片做下处理
+//        if (naviInfo.getIconBitmap() != null) {
+//
+//
+//            Bitmap iconBitmap = naviInfo.getIconBitmap();
+//
+//            //这个方法数据会卡 一秒一卡
+////            int bytes = iconBitmap.getByteCount();
+////            ByteBuffer buffer = ByteBuffer.allocate(bytes);
+////            iconBitmap.copyPixelsToBuffer(buffer);
+////            byte[] data = buffer.array();
+//
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            boolean isSuccess = iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//            mNaviInfo.setIconBitmap(isSuccess ? baos.toByteArray() : null);
+//
+//            //释放bitmap内存
+////            if (!iconBitmap.isRecycled()) {
+////                iconBitmap.recycle();
+////                iconBitmap = null;
+////            }
+//
+//        } else {
+//            mNaviInfo.setIconBitmap(null);
+//        }
+//
+//        mNaviChannel.invokeMethod("onNaviInfoUpdate", new Gson().toJson(mNaviInfo));
+//        Log.d(TAG, "android-->" + Constant.NAVI_CHANNEL_NAME + "::" + "onNaviInfoUpdate");
     }
 
     @Override
     public void onNaviInfoUpdated(AMapNaviInfo aMapNaviInfo) {
 
     }
+
 
     @Override
     public void updateCameraInfo(AMapNaviCameraInfo[] aMapNaviCameraInfos) {
@@ -527,7 +579,7 @@ public class AMapNaviPluginView implements PlatformView, MethodChannel.MethodCal
 
     @Override
     public void onCalculateRouteFailure(AMapCalcRouteResult aMapCalcRouteResult) {
-        Log.d(TAG, "onCalculateRouteFailure: "+aMapCalcRouteResult.getErrorDetail());
+        Log.d(TAG, "onCalculateRouteFailure: " + aMapCalcRouteResult.getErrorDetail());
     }
 
     @Override

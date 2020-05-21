@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:amapnaviplugin/model/navi_info.dart';
 import 'package:amapnaviplugin/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 typedef void NaviCloseHandler();
 typedef void NaviMoreHandler();
+typedef void NaviInfoHandler(NaviInfo naviInfo);
 typedef void NaviTouchMap();
 typedef void CalculateRouteSuccess();
 typedef void CalculateRouteFailure();
@@ -16,14 +18,16 @@ class AMapNaviController with WidgetsBindingObserver {
   final MethodChannel _naviChannel;
   final NaviCloseHandler onCloseHandler;
   final NaviMoreHandler onMoreHandler;
+  final NaviInfoHandler naviInfoHandler;
   final NaviTouchMap naviTouchMap;
   final CalculateRouteSuccess calculateRouteSuccess;
   final CalculateRouteFailure calculateRouteFailure;
 
-  AMapNaviController( {
+  AMapNaviController({
     int viewId,
     this.onCloseHandler,
     this.onMoreHandler,
+    this.naviInfoHandler,
     this.naviTouchMap,
     this.calculateRouteSuccess,
     this.calculateRouteFailure,
@@ -59,9 +63,7 @@ class AMapNaviController with WidgetsBindingObserver {
   Future startAMapNavi() {
     print("dart--> ${_naviChannel.name} --> startNavi ");
 
-    return _naviChannel
-        .invokeMethod('startNavi')
-        .then((onValue) {
+    return _naviChannel.invokeMethod('startNavi').then((onValue) {
       return onValue;
     });
   }
@@ -69,9 +71,7 @@ class AMapNaviController with WidgetsBindingObserver {
   Future recoverLockMode() {
     print("dart--> ${_naviChannel.name} --> recoverLockMode ");
 
-    return _naviChannel
-        .invokeMethod('recoverLockMode')
-        .then((onValue) {
+    return _naviChannel.invokeMethod('recoverLockMode').then((onValue) {
       return onValue;
     });
   }
@@ -79,9 +79,7 @@ class AMapNaviController with WidgetsBindingObserver {
   Future displayOverview() {
     print("dart--> ${_naviChannel.name} --> displayOverview ");
 
-    return _naviChannel
-        .invokeMethod('displayOverview')
-        .then((onValue) {
+    return _naviChannel.invokeMethod('displayOverview').then((onValue) {
       return onValue;
     });
   }
@@ -106,17 +104,31 @@ class AMapNaviController with WidgetsBindingObserver {
           break;
         case 'onCalculateRouteSuccess':
           print('dart 接收到 onCalculateRouteSuccess');
-          if(calculateRouteSuccess!=null){
+          if (calculateRouteSuccess != null) {
             calculateRouteSuccess();
           }
           break;
         case 'onCalculateRouteFailure':
-          if(calculateRouteFailure!=null){
+          if (calculateRouteFailure != null) {
             calculateRouteFailure();
           }
           break;
         case 'touchMap':
-
+          //触摸地图
+          break;
+        case 'onNaviInfoUpdate':
+          print('导航数据：：${handler.arguments}');
+          try {
+            if (naviInfoHandler != null) {
+              NaviInfo naviInfo =
+                  NaviInfo.fromJson(jsonDecode(handler.arguments));
+              print('转换的数据：： ${naviInfo.toJson()}');
+              naviInfoHandler(naviInfo);
+            }
+          } catch (e) {
+            print(e);
+          }
+          break;
         default:
           break;
       }
