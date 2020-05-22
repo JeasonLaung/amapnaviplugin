@@ -16,10 +16,13 @@ A new Flutter plugin.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '8.0'
-  
-  s.dependency 'AMapNavi-NO-IDFA','7.4.0'
-  s.dependency 'AMapLocation-NO-IDFA','2.6.5'
-  s.dependency 'AMapSearch-NO-IDFA','7.3.0'
+
+
+ s.dependency 'AMapNavi'
+ # s.dependency 'AMapNavi-NO-IDFA','7.4.0'
+ # s.dependency 'AMapNavi-NO-IDFA','6.9.0'
+ s.dependency 'AMapLocation'
+ s.dependency 'AMapSearch'
   s.dependency 'HandyJSON','5.0.1'
   
   s.static_framework = true
